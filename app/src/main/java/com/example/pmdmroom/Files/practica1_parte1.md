@@ -303,143 +303,145 @@
 
             3.5. Después de comprobar que todo está bien implementado, vamos a crear el modelo de datos para poder crear, editar, eliminar y mostrar las tareas. También necesitaremos crear las funciones Composable que van a mostrar la lista de tareas.
 
-            Los modelos de la ***UI*** los incluiremos en una nueva carpeta que crearemos en `addtasks/ui/model` *(nuevo package)* y le daremos el nombre **`TaskModel`**, que será una *data class*.
+            Los modelos de la ***UI*** los incluiremos en una nueva carpeta
+            que crearemos en `addtasks/ui/model` *(nuevo package)*
+            y le daremos el nombre **`TaskModel`**, que será una *data class*.
 
-            En **`TaskModel`** crearemos el modelo de datos de la información que se almacenará de cada tarea:
+               En **`TaskModel`** crearemos el modelo de datos de la información que se almacenará de cada tarea:
 
-             ```
-             //Nuestro modelo de datos...
-             //El valor del id por defecto lo vamos a calcular con el momento en el que lo creamos, es decir, el tiempo en milisegundos.
-             //El valor de la casilla de verificación por defecto debería ser siempre falso cuando creamos la tarea.
-             data class TaskModel(
-                 val id: Long = System.currentTimeMillis(),
-                 val task: String,
-                 var selected: Boolean = false
-             )
-             ```
+                ```
+                //Nuestro modelo de datos...
+                //El valor del id por defecto lo vamos a calcular con el momento en el que lo creamos, es decir, el tiempo en milisegundos.
+                //El valor de la casilla de verificación por defecto debería ser siempre falso cuando creamos la tarea.
+                data class TaskModel(
+                    val id: Long = System.currentTimeMillis(),
+                    val task: String,
+                    var selected: Boolean = false
+                )
+                ```
     
-             En **`TaskScreen`** creamos las funciones Composable encargadas de listar las tareas:
+                En **`TaskScreen`** creamos las funciones Composable encargadas de listar las tareas:
 
-             ```
-             @Composable
-             fun TasksList(tasksViewModel: TasksViewModel) {
-                 val myTasks: List<TaskModel> = tasksViewModel.tasks
+                ```
+                @Composable
+                fun TasksList(tasksViewModel: TasksViewModel) {
+                    val myTasks: List<TaskModel> = tasksViewModel.tasks
 
-                 LazyColumn {
-                     //El parámetro opcional key ayuda a optimizar el LazyColumn
-                     //Al indicarle que la clave es el id va a ser capaz de identificar cada tarea sin problemas
-                     items(myTasks, key = { it.id }) { task ->
-                         ItemTask(
-                             task,
-                             onTaskRemove = { tasksViewModel.onItemRemove(it) },
-                             onTaskCheckChanged = { tasksViewModel.onCheckBoxSelected(it) }
-                         )
-                     }
-                 }
-             }
-             ```
+                    LazyColumn {
+                        //El parámetro opcional key ayuda a optimizar el LazyColumn
+                        //Al indicarle que la clave es el id va a ser capaz de identificar cada tarea sin problemas
+                        items(myTasks, key = { it.id }) { task ->
+                            ItemTask(
+                                task,
+                                onTaskRemove = { tasksViewModel.onItemRemove(it) },
+                                onTaskCheckChanged = { tasksViewModel.onCheckBoxSelected(it) }
+                            )
+                        }
+                    }
+                }
+                ```
 
-             ```
-             @Composable
-             fun ItemTask (
-                 taskModel: TaskModel,
-                 onTaskRemove: (TaskModel) -> Unit,
-                 onTaskCheckChanged: (TaskModel) -> Unit
-             ) {
-                 Card(
-                     //pointerInput es una función se utiliza para configurar la entrada de puntero (input)
-                     //para el componente visual al que se le aplica... la detección de gestos de entrada táctil
-                     //En nuestro caso queremos eliminar una tarea con el gesto de pulsación larga (onLongPress)
-                     //sobre la tarea, por lo tanto el componente visual dónde aplicar el modificador debe ser el Card.
-                     //En la expresión lambda no podemos utilizar it como parámetro de la llamada a onTaskRemove(it)
-                     //it es el Offset y nosotros necesitamos pasarle el taskModel que debe eliminarse...
-                     Modifier
-                         .fillMaxWidth()
-                         .padding(horizontal = 16.dp, vertical = 8.dp)
-                         .pointerInput(Unit) {
-                             detectTapGestures(onLongPress = {
-                                 onTaskRemove(taskModel)
-                             })
-                         },
-                     elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-                 ) {
-                     Row(
-                         Modifier
-                             .fillMaxWidth(),
-                         verticalAlignment = Alignment.CenterVertically
-                     ) {
-                         Text(
-                             text = taskModel.task,
-                             modifier = Modifier
-                                 .padding(horizontal = 4.dp)
-                                 .weight(1f)
-                         )
-                         Checkbox(
-                             checked = taskModel.selected,
-                             onCheckedChange = { onTaskCheckChanged(taskModel) }
-                         )
-                     }
-                 }
-             }
-             ```
+                ```
+                @Composable
+                fun ItemTask (
+                    taskModel: TaskModel,
+                    onTaskRemove: (TaskModel) -> Unit,
+                    onTaskCheckChanged: (TaskModel) -> Unit
+                ) {
+                    Card(
+                        //pointerInput es una función se utiliza para configurar la entrada de puntero (input)
+                        //para el componente visual al que se le aplica... la detección de gestos de entrada táctil
+                        //En nuestro caso queremos eliminar una tarea con el gesto de pulsación larga (onLongPress)
+                        //sobre la tarea, por lo tanto el componente visual dónde aplicar el modificador debe ser el Card.
+                        //En la expresión lambda no podemos utilizar it como parámetro de la llamada a onTaskRemove(it)
+                        //it es el Offset y nosotros necesitamos pasarle el taskModel que debe eliminarse...
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                            .pointerInput(Unit) {
+                                detectTapGestures(onLongPress = {
+                                    onTaskRemove(taskModel)
+                                })
+                            },
+                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                    ) {
+                        Row(
+                            Modifier
+                                .fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = taskModel.task,
+                                modifier = Modifier
+                                    .padding(horizontal = 4.dp)
+                                    .weight(1f)
+                            )
+                            Checkbox(
+                                checked = taskModel.selected,
+                                onCheckedChange = { onTaskCheckChanged(taskModel) }
+                            )
+                        }
+                    }
+                }
+                ```
     
-             En **`TasksViewModel`** creamos una estructura de datos para almacenar la lista de tareas *(_tasks)*, actualizamos la función que agrega una nueva tarea para que la añada a la lista y añadimos las funciones que nos quedaban por desarrollar para eliminar una tarea y actualizar la casilla de verificación de una tarea:
+                En **`TasksViewModel`** creamos una estructura de datos para almacenar la lista de tareas *(_tasks)*, actualizamos la función que agrega una nueva tarea para que la añada a la lista y añadimos las funciones que nos quedaban por desarrollar para eliminar una tarea y actualizar la casilla de verificación de una tarea:
 
-             ```
-             //Los LiveData no van bien con los listados que se tienen que ir actualizando...
-             //Para solucionarlo, podemos utilizar un mutableStateListOf porque se lleva mejor con LazyColumn a la hora de refrescar la información en la vista...
-             private val _tasks = mutableStateListOf<TaskModel>()
-             val tasks: List<TaskModel> = _tasks
-             ```
+                ```
+                //Los LiveData no van bien con los listados que se tienen que ir actualizando...
+                //Para solucionarlo, podemos utilizar un mutableStateListOf porque se lleva mejor con LazyColumn a la hora de refrescar la información en la vista...
+                private val _tasks = mutableStateListOf<TaskModel>()
+                val tasks: List<TaskModel> = _tasks
+                ```
 	
-             ```
-             //Actualizamos la función para crear la tarea en la lista anterior
-             //Comentamos el mensaje al log que hemos realizado inicialmente y añadimos una nueva tarea a la lista _tasks
-             fun onTaskCreated() {
-                 onDialogClose()
-                 //Log.i("dam2", _myTaskText.value ?: "")
-                 _tasks.add(TaskModel(task = _myTaskText.value ?: ""))
-                 _myTaskText.value = ""
-             }
-             ```
+                ```
+                //Actualizamos la función para crear la tarea en la lista anterior
+                //Comentamos el mensaje al log que hemos realizado inicialmente y añadimos una nueva tarea a la lista _tasks
+                fun onTaskCreated() {
+                    onDialogClose()
+                    //Log.i("dam2", _myTaskText.value ?: "")
+                    _tasks.add(TaskModel(task = _myTaskText.value ?: ""))
+                    _myTaskText.value = ""
+                }
+                ```
 
-             ```
-             fun onItemRemove(taskModel: TaskModel) {
-                 //No podemos usar directamente _tasks.remove(taskModel) porque no es posible por el uso de let con copy para modificar el checkbox...
-                 //Para hacerlo correctamente, debemos previamente buscar la tarea en la lista por el id y después eliminarla
-                 val task = _tasks.find { it.id == taskModel.id }
-                 _tasks.remove(task)
-             }
-             ```
+                ```
+                fun onItemRemove(taskModel: TaskModel) {
+                    //No podemos usar directamente _tasks.remove(taskModel) porque no es posible por el uso de let con copy para modificar el checkbox...
+                    //Para hacerlo correctamente, debemos previamente buscar la tarea en la lista por el id y después eliminarla
+                    val task = _tasks.find { it.id == taskModel.id }
+                    _tasks.remove(task)
+                }
+                ```
 
-             ```
-             fun onCheckBoxSelected(taskModel: TaskModel) {
-                 val index = _tasks.indexOf(taskModel)
+                ```
+                fun onCheckBoxSelected(taskModel: TaskModel) {
+                    val index = _tasks.indexOf(taskModel)
 
-                 //Si se modifica directamente _tasks[index].selected = true no se recompone el item en el LazyColumn
-                 //Esto nos ha pasado ya en el proyecto BlackJack... ¿¿os acordáis?? :-(
-                 //Y es que la vista no se entera que debe recomponerse, aunque realmente si se ha modificado el valor en el item
-                 //Para solucionarlo y que se recomponga sin problemas en la vista, lo hacemos con un let...
+                    //Si se modifica directamente _tasks[index].selected = true no se recompone el item en el LazyColumn
+                    //Esto nos ha pasado ya en el proyecto BlackJack... ¿¿os acordáis?? :-(
+                    //Y es que la vista no se entera que debe recomponerse, aunque realmente si se ha modificado el valor en el item
+                    //Para solucionarlo y que se recomponga sin problemas en la vista, lo hacemos con un let...
         
-                 //El método let toma como parámetro el objeto y devuelve el resultado de la expresión lambda
-                 //En nuestro caso, el objeto que recibe let es de tipo TaskModel, que está en _tasks[index] 
-                 //(sería el it de la exprexión lambda)
-                 //El método copy realiza una copia del objeto, pero modificando la propiedad selected a lo contrario
-                 //El truco está en que no se modifica solo la propiedad selected de tasks[index], 
-                 //sino que se vuelve a reasignar para que la vista vea que se ha actualizado un item y se recomponga.
-                 _tasks[index] = _tasks[index].let { it.copy(selected = !it.selected) }
-             }
-             ```
+                    //El método let toma como parámetro el objeto y devuelve el resultado de la expresión lambda
+                    //En nuestro caso, el objeto que recibe let es de tipo TaskModel, que está en _tasks[index] 
+                    //(sería el it de la exprexión lambda)
+                    //El método copy realiza una copia del objeto, pero modificando la propiedad selected a lo contrario
+                    //El truco está en que no se modifica solo la propiedad selected de tasks[index], 
+                    //sino que se vuelve a reasignar para que la vista vea que se ha actualizado un item y se recomponga.
+                    _tasks[index] = _tasks[index].let { it.copy(selected = !it.selected) }
+                }
+                ```
     
-             3.6. ***Para finalizar la parte 1 de la práctica***, realizamos una prueba completa de nuestra app de gestión de tareas, aunque aún sin la conexión a la base de datos con `Room`.
+                3.6. ***Para finalizar la parte 1 de la práctica***, realizamos una prueba completa de nuestra app de gestión de tareas, aunque aún sin la conexión a la base de datos con `Room`.
 
-             Debemos comprobar que todo funciona correctamente:
+                Debemos comprobar que todo funciona correctamente:
 
-             * Se añaden tareas a la lista _tasks.
-             * Se muestran en la pantalla principal de la app.
-             * Se puede actualizar la casilla de verificación de cada tarea.
-             * Se puede eliminar una tarea al pulsar de manera prolongada sobre ella.
+                * Se añaden tareas a la lista _tasks.
+                * Se muestran en la pantalla principal de la app.
+                * Se puede actualizar la casilla de verificación de cada tarea.
+                * Se puede eliminar una tarea al pulsar de manera prolongada sobre ella.
 
-             Pero si cerramos la aplicación y volvemos a abrirla no existe persistencia de datos... esto lo vamos a conseguir con la implementación en el proyecto de `Room` y `Flow`.
+                Pero si cerramos la aplicación y volvemos a abrirla no existe persistencia de datos... esto lo vamos a conseguir con la implementación en el proyecto de `Room` y `Flow`.
 	
-             ***En este punto debemos hacer un commit y push de nuestra rama principal y crearnos otra con el nombre `desarrollo_room`, dónde realizaremos la parte 2 de la práctica.***
+                ***En este punto debemos hacer un commit y push de nuestra rama principal y crearnos otra con el nombre `desarrollo_room`, dónde realizaremos la parte 2 de la práctica.***
