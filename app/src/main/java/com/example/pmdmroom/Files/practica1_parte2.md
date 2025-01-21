@@ -6,9 +6,12 @@
 
 4. **Implementación de Room.**
 
-	Una base de datos de Room en Android es una biblioteca de persistencia que proporciona una capa de abstracción sobre SQLite. Se trata de una persistencia a nivel local.
+	Una base de datos de Room en Android es una biblioteca de persistencia
+	que proporciona una capa de abstracción sobre SQLite.
+	Se trata de una persistencia a nivel local.
 
-	4.1. Incluir las dependencias necesarias para utilizar Room. Las insertaremos en build.gradle.kts (Module):
+	4.1. Incluir las dependencias necesarias para utilizar Room.
+	Las insertaremos en build.gradle.kts (Module):
 
     ```
 	dependencies {
@@ -23,7 +26,10 @@
 	}
     ```
 
-	4.2. Lo primero es crear la base de datos. Dentro de la carpeta data crearemos un fichero con el nombre `TasksManageDatabase` que contendrá una clase abstracta que extenderá de ***RoomDatabase***:
+	4.2. Lo primero es crear la base de datos.
+	Dentro de la carpeta data crearemos un fichero con el nombre
+	`TasksManageDatabase` que contendrá una clase abstracta que
+	extenderá de ***RoomDatabase***:
 
     ```
 	//TaskEntity::class te dará una referencia al objeto KClass que representa la clase TaskEntity. 
@@ -36,13 +42,23 @@
 	}
     ```
     
-	***Necesitamos crear las entidades de la base de datos...*** en nuestro caso será muy simple y solo contendrá una entidad, que básicamente tendrá los mismos campos de mi data class TaskModel... es la información que nosotros queremos que persista en la base de datos.
+	***Necesitamos crear las entidades de la base de datos...***
+	en nuestro caso será muy simple y solo contendrá una entidad,
+	que básicamente tendrá los mismos campos de mi data class TaskModel...
+	es la información que nosotros queremos que persista en la base de datos.
 	
-	***No vamos a usar la misma clase TaskModel*** porque este es un modelo de la capa de UI y deberíamos evitar que un modelo de UI, un modelo de data y un modelo de dominio sea el mismo *(evitar el acoplamiento de capas)*.
+	***No vamos a usar la misma clase TaskModel*** porque este es un modelo
+	de la capa de UI y deberíamos evitar que un modelo de UI,
+	un modelo de data y un modelo de dominio sea el mismo
+	*(evitar el acoplamiento de capas)*.
 	
-	Aunque para este proyecto tan simple con una única entidad, después usaremos el mismo modelo para la capa de UI y dominio, pero la capa de data si que debe tener su propio modelo distinto a las otras capas *(separación de capas)*.
+	Aunque para este proyecto tan simple con una única entidad,
+	después usaremos el mismo modelo para la capa de UI y dominio,
+	pero la capa de data si que debe tener su propio modelo distinto
+	a las otras capas *(separación de capas)*.
 	
-	En la carpeta data creamos la entidad TaskEntity, que será también una data class:
+	En la carpeta data creamos la entidad TaskEntity,
+	que será también una data class:
 
     ```
 	//La Entidad es el modelo de datos que vamos a persistir en nuestra base de datos...
@@ -55,7 +71,9 @@
 	)
     ```
     	
-	También vamos a hacer una pequeña modificación en la data class TaskModel para utilizar una función hash en la generación del id y dejarlo también cómo tipo de datos Int:
+	También vamos a hacer una pequeña modificación en la data class
+	TaskModel para utilizar una función hash en la generación del id y
+	dejarlo también cómo tipo de datos Int:
 
     ```
 	//Nuestro modelo de datos...
@@ -69,11 +87,15 @@
 	)
     ```
     	
-	Al final estamos trabajando con una base de datos con la que vamos a interactuar utilizando SQL... necesitamos crearnos un **`DAO`** ***(Data Access Object)***, que es dónde escribiremos nuestras consultas SQL.
+	Al final estamos trabajando con una base de datos con la que vamos a interactuar
+	utilizando SQL... necesitamos crearnos un **`DAO`** ***(Data Access Object)***,
+	que es dónde escribiremos nuestras consultas SQL.
 	
-	Los DAOs en Room se utilizan para definir métodos que interactúan con la base de datos.
+	Los DAOs en Room se utilizan para definir métodos que interactúan con la base de
+	datos.
 	
-	En este caso será un Interface, se ubicará también en la carpeta data y le daremos el nombre TaskDao:
+	En este caso será un Interface, se ubicará también en la carpeta data
+	y le daremos el nombre TaskDao:
 
     ```
 	/**
@@ -91,9 +113,12 @@
 	}
     ```
     	
-	4.3. Lo siguiente será incluir Room con la inyección de dependencias de Dagger Hilt.
+	4.3. Lo siguiente será incluir Room con la inyección de dependencias
+	de Dagger Hilt.
 	
-	Para este apartado nos vamos a crear una nueva carpeta dentro de data, que se llamará **`di`**, y es dónde incluiremos el módulo de la base de datos, que será una clase de Kotlin con el nombre **`DatabaseModule`**:
+	Para este apartado nos vamos a crear una nueva carpeta dentro de data,
+	que se llamará **`di`**, y es dónde incluiremos el módulo de la base de datos,
+	que será una clase de Kotlin con el nombre **`DatabaseModule`**:
 
     ```
 	//Debe ser un Singleton	para que la base de datos sea única en nuestro proyecto.
@@ -123,11 +148,18 @@
 
 	4.4 Preparación del repositorio.
 	
-	El ***repositorio*** va a ser la clase que va a realizar todas las consultas a la base de datos en nuestro caso. Es la parte más externa de la capa o el módulo de data.
+	El ***repositorio*** va a ser la clase que va a realizar todas las consultas
+	a la base de datos en nuestro caso.
+	Es la parte más externa de la capa o el módulo de data.
 	
-	Nuestros ***casos de usos*** le van a pedir al repositorio que hagan las acciones necesarias que necesiten. Y sería el repositorio el que llamaría a lo que necesite de dentro del módulo data para obtener la información o realizar la acción que se le ha solicitado.
+	Nuestros ***casos de usos*** le van a pedir al repositorio que hagan las
+	acciones necesarias que necesiten.
+	Y sería el repositorio el que llamaría a lo que necesite de dentro del
+	módulo data para obtener la información o realizar la acción que se le ha
+	solicitado.
 	
-	Creamos en la carpeta data un fichero `TaskRepository` que será una clase. Debe ser también un ***Singleton*** y estará inyectado por Dagger Hilt.
+	Creamos en la carpeta data un fichero `TaskRepository` que será una clase.
+	Debe ser también un ***Singleton*** y estará inyectado por Dagger Hilt.
 
     ```
 	@Singleton
@@ -149,11 +181,17 @@
     
 	4.5. Capa de dominio: ***Casos de uso***.
 	
-	Estos casos de uso van a ser muy simples, pero nos vienen bien para practicar y entenderlos.
+	Estos casos de uso van a ser muy simples, pero nos vienen bien para practicar
+	y entenderlos.
 	
-	Nuestro primer caso de uso va a solicitar una lista de las tareas que estén almacenadas en la base de datos en forma de `Flow` con una lista de `TaskModel`... ***realmente en los casos de uso no sabemos cómo, ni de dónde se va buscar la información, eso es cosa de la capa data, simplemente se lo pedimos al repositorio***.
+	Nuestro primer caso de uso va a solicitar una lista de las tareas que estén
+	almacenadas en la base de datos en forma de `Flow` con una lista de
+	`TaskModel`... ***realmente en los casos de uso no sabemos cómo, ni de
+	dónde se va buscar la información, eso es cosa de la capa data, simplemente
+	se lo pedimos al repositorio***.
 	
-	Creamos en la carpeta domain el fichero `GetTasksUseCase`, que será una clase con el siguiente código:
+	Creamos en la carpeta domain el fichero `GetTasksUseCase`, que será una
+	clase con el siguiente código:
 
     ```
 	/**
@@ -167,7 +205,8 @@
 	}
     ```
     
-	En la misma carpeta, creamos un caso de uso para agregar una tarea. Se llamará AddTaskUseCase:
+	En la misma carpeta, creamos un caso de uso para agregar una tarea.
+	Se llamará AddTaskUseCase:
 
     ```
 	/**
@@ -180,65 +219,79 @@
 	}
     ```
 
-5. **Flows (flujos) en Kotlin.**
+   5. **Flows (flujos) en Kotlin.**
 
-	En Kotlin, **Flow** es una API para trabajar con secuencias de valores asincrónicas y potencialmente infinitas. Se utiliza para representar secuencias de valores que se pueden producir y consumir de manera asíncrona.
+       En Kotlin, **Flow** es una API para trabajar con secuencias de valores
+   		asincrónicas y potencialmente infinitas. Se utiliza para representar
+   		secuencias de valores que se pueden producir y consumir de manera asíncrona.
 	
-	Básicamente un Flow es cómo un LiveData mejorado que nos permite mandar datos de manera continua. Cuando hacemos una corutina vamos a saber de manera continua cuanto le queda en todo momento... conseguimos con Flow una fuente de continua información o actualización de la información.
+       Básicamente un Flow es cómo un LiveData mejorado que nos permite mandar
+   		datos de manera continua. Cuando hacemos una corutina vamos a saber de manera continua cuanto le queda en todo momento... conseguimos con Flow una fuente de continua información o actualización de la información.
 	
-	En materia de corrutinas, un flujo es un tipo que puede emitir varios valores de manera secuencial, en lugar de suspender funciones que muestran solo un valor único. 
+       En materia de corrutinas, un flujo es un tipo que puede emitir varios
+   		valores de manera secuencial, en lugar de suspender funciones que
+   		muestran solo un valor único. 
 	
-	Un flujo se puede usar, por ejemplo, para recibir actualizaciones en vivo de una base de datos.
+       Un flujo se puede usar, por ejemplo, para recibir actualizaciones en vivo
+   		de una base de datos.
 
-	Los flujos se compilan sobre las corrutinas y pueden proporcionar varios valores. Un flujo es conceptualmente una transmisión de datos que se puede computar de forma asíncrona.
+       Los flujos se compilan sobre las corrutinas y pueden proporcionar varios
+   		valores. Un flujo es conceptualmente una transmisión de datos que se puede
+   		computar de forma asíncrona.
 	
-	Para más información: [Flujos de Kotlin en Android](https://developer.android.com/kotlin/flow?hl=es-419)
+       Para más información: [Flujos de Kotlin en Android](https://developer.android.com/kotlin/flow?hl=es-419)
 	
-	**El flujo funciona básicamente con las siguientes entidades:**
+       **El flujo funciona básicamente con las siguientes entidades:**
 	
-	* ***Productor***, que es el que crea el flujo y en nuestro caso será el ```repositorio```, que es el que está leyendo siempre de la base de datos.
-	* ***Intermediario*** (opcional), que en nuestra app será el caso de uso.
-	* ***Consumidor***, que es el que consume los valores del flujo y en nuestro caso será la ```UI```... son datos de un listado y queremos que la interfaz de usuario vaya pintando esos datos que va consumiendo.
+       * ***Productor***, que es el que crea el flujo y en nuestro caso será el
+      	```repositorio```, que es el que está leyendo siempre de la base de datos.
+       * ***Intermediario*** (opcional), que en nuestra app será el caso de uso.
+       * ***Consumidor***, que es el que consume los valores del flujo y en nuestro
+       * caso será la ```UI```... son datos de un listado y queremos que
+       * la interfaz de usuario vaya pintando esos datos que va consumiendo.
 	
-	En nuestra aplicación realmente nosotros estamos siempre devolviendo un flujo, porque nos lo proporciona Room. Pero en la documentación de "Flujos de Kotlin en Android" podéis observar un código de ejemplo de cómo se crearía un flujo:
+       En nuestra aplicación realmente nosotros estamos siempre devolviendo un
+   		flujo, porque nos lo proporciona Room. Pero en la documentación de
+   		"Flujos de Kotlin en Android" podéis observar un código de ejemplo de
+   		cómo se crearía un flujo:
 	
-	```
-	class NewsRemoteDataSource(
-		private val newsApi: NewsApi,
-		private val refreshIntervalMs: Long = 5000
-	) {
-		val latestNews: Flow<List<ArticleHeadline>> = flow {
-			while(true) {
-				val latestNews = newsApi.fetchLatestNews()
-				emit(latestNews) // Emits the result of the request to the flow
-				delay(refreshIntervalMs) // Suspends the coroutine for some time
-			}
-		}
-	}
+       ```
+       class NewsRemoteDataSource(
+           private val newsApi: NewsApi,
+           private val refreshIntervalMs: Long = 5000
+       ) {
+           val latestNews: Flow<List<ArticleHeadline>> = flow {
+               while(true) {
+                   val latestNews = newsApi.fetchLatestNews()
+                   emit(latestNews) // Emits the result of the request to the flow
+                   delay(refreshIntervalMs) // Suspends the coroutine for some time
+               }
+           }
+       }
 
-	// Interface that provides a way to make network requests with suspend functions
-	interface NewsApi {
-		suspend fun fetchLatestNews(): List<ArticleHeadline>
-	}
-	```
+       // Interface that provides a way to make network requests with suspend functions
+       interface NewsApi {
+           suspend fun fetchLatestNews(): List<ArticleHeadline>
+       }
+       ```
 	
-	La explicación del código anterior sería la siguiente:
+       La explicación del código anterior sería la siguiente:
 	
-	* `NewsRemoteDataSource`: Es una clase que actúa como fuente remota de noticias. Recibe una instancia de NewsApi y un intervalo de actualización (refreshIntervalMs) como parámetros.
+       * `NewsRemoteDataSource`: Es una clase que actúa como fuente remota de noticias. Recibe una instancia de NewsApi y un intervalo de actualización (refreshIntervalMs) como parámetros.
 
-	* `latestNews`: Es una propiedad de solo lectura de tipo `Flow<List<ArticleHeadline>>`. Representa la secuencia de noticias más recientes que se actualiza periódicamente.
+       * `latestNews`: Es una propiedad de solo lectura de tipo `Flow<List<ArticleHeadline>>`. Representa la secuencia de noticias más recientes que se actualiza periódicamente.
 
-	* `flow { ... }`: Esto define un constructor de flujo. El bloque de código dentro de las llaves define la lógica para producir elementos en el flujo.
+       * `flow { ... }`: Esto define un constructor de flujo. El bloque de código dentro de las llaves define la lógica para producir elementos en el flujo.
 
-	* `while (true)`: Es un bucle infinito que se ejecuta continuamente para obtener noticias y actualizar el flujo.
+       * `while (true)`: Es un bucle infinito que se ejecuta continuamente para obtener noticias y actualizar el flujo.
 
-	* val `latestNews = newsApi.fetchLatestNews()`: Llama a la función suspendida fetchLatestNews de la interfaz NewsApi para obtener la lista más reciente de titulares de noticias.
+       * val `latestNews = newsApi.fetchLatestNews()`: Llama a la función suspendida fetchLatestNews de la interfaz NewsApi para obtener la lista más reciente de titulares de noticias.
 
-	* `emit(latestNews)`: Emite la lista de titulares de noticias al flujo, haciendo que esté disponible para ser consumida por cualquier suscriptor del flujo.
+       * `emit(latestNews)`: Emite la lista de titulares de noticias al flujo, haciendo que esté disponible para ser consumida por cualquier suscriptor del flujo.
 
-	* `delay(refreshIntervalMs)`: Suspende la ejecución de la coroutine durante el tiempo especificado en refreshIntervalMs. Esto establece un intervalo entre las actualizaciones de noticias.
+       * `delay(refreshIntervalMs)`: Suspende la ejecución de la coroutine durante el tiempo especificado en refreshIntervalMs. Esto establece un intervalo entre las actualizaciones de noticias.
 
-	En resumen, este código utiliza `Flow` para crear una secuencia de noticias que se actualiza periódicamente. Cada vez que se actualiza, la lista más reciente de titulares de noticias se emite al flujo, y luego el hilo se suspende durante un tiempo especificado antes de la próxima actualización.
+       En resumen, este código utiliza `Flow` para crear una secuencia de noticias que se actualiza periódicamente. Cada vez que se actualiza, la lista más reciente de titulares de noticias se emite al flujo, y luego el hilo se suspende durante un tiempo especificado antes de la próxima actualización.
 	
 6. **Tipos de Flow - StateFlow**.
 
@@ -266,9 +319,12 @@
 
 	7.1. Para empezar necesitamos estados de la UI. 
 	
-	Nos situamos en la carpeta `ui` y creamos una interfaz con el nombre **`TaskUiState`**. Será una `sealed interface` que contendrá los estados de la pantalla. 
+	Nos situamos en la carpeta `ui` y creamos una interfaz con el nombre
+    **`TaskUiState`**. Será una `sealed interface` que contendrá los estados de
+    la pantalla. 
 	
-	Los estados que no reciban datos los vamos a crear cómo `object` y los que si cómo `data class`.
+	Los estados que no reciban datos los vamos a crear cómo `object` y los que si
+    cómo `data class`.
 
     ```
 	/**
@@ -292,17 +348,23 @@
 
 	* `data class Success(val tasks: List<TaskModel>): TaskUiState`: Representa el estado de éxito. Utiliza una clase de datos (data class) llamada `Success` para representar este estado. Tiene un parámetro llamado tasks que es de tipo `List<TaskModel>`, y este parámetro se utiliza para almacenar la lista de tareas exitosamente obtenidas.
 
-	***En resumen***, esta interfaz sellada **`TaskUiState`** define tres estados posibles para la interfaz de usuario de la tarea: carga (**`Loading`**), error (**`Error`**), y éxito (**`Success`**). Cada estado tiene su propia estructura de datos asociada para llevar información específica dependiendo del estado.
+	***En resumen***, esta interfaz sellada **`TaskUiState`** define tres estados
+    posibles para la interfaz de usuario de la tarea: carga (**`Loading`**), error
+    (**`Error`**), y éxito (**`Success`**). Cada estado tiene su propia estructura
+    de datos asociada para llevar información específica dependiendo del estado.
 
-	7.2. Modificaciones en TasksViewModel para crear el flujo completo con persistencia en nuestra base de datos.
+	7.2. Modificaciones en TasksViewModel para crear el flujo completo con
+    persistencia en nuestra base de datos.
 
-	Para poder utilizar las llamadas a Success, Error y Loading sin problemas podéis importar lo siguiente en el ViewModel:
+	Para poder utilizar las llamadas a Success, Error y Loading sin problemas podéis
+    importar lo siguiente en el ViewModel:
 	
 	```
 	import com.dam23_24.ejemploroom.addtasks.ui.TaskUiState.*
 	```
 	
-	Antes de nada, debemos inyectar los casos de uso que hemos creado hasta ahora en el ViewModel, porque los vamos a utilizar:
+	Antes de nada, debemos inyectar los casos de uso que hemos creado hasta ahora
+    en el ViewModel, porque los vamos a utilizar:
 	
 	```
 	//El parámetro getTasksUseCase del constructor se inyecta sin private val porque no nos hace falta 
@@ -314,7 +376,8 @@
 	): ViewModel() {
 	```
 	
-	Añadimos la variable **`uiState`**, de tipo `StateFlow`, que va a controlar y gestionar los estados de la ui de nuestra única pantalla:
+	Añadimos la variable **`uiState`**, de tipo `StateFlow`, que va a controlar
+    y gestionar los estados de la ui de nuestra única pantalla:
 
 	```
     //El caso de uso getTasksUseCase() nos devuelve el Flow continuo y cada vez que actualice
@@ -331,9 +394,15 @@
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), Loading)
 	```
 	
-	**Con la variable `uiState` vamos a estar recuperando las tareas que existen en la base de datos continuamente**. Pero para poder obtener las tareas, previamente debemos añadirlas.
+	**Con la variable `uiState` vamos a estar recuperando las tareas que existen
+    en la base de datos continuamente**. Pero para poder obtener las tareas,
+    previamente debemos añadirlas.
 	
-	Lo siguiente será lanzar con `viewModelScope` el caso de uso para añadir una tarea en nuestra función `onTaskAdded()` del ViewModel. De esta forma, nuestro Flow hará que al insertar la nueva tarea en la base de datos, cómo el flujo es continuo, enviará directamente a Success la nueva tarea para que se pinte por la ui.
+	Lo siguiente será lanzar con `viewModelScope` el caso de uso para añadir una
+    tarea en nuestra función `onTaskAdded()` del ViewModel.
+    De esta forma, nuestro Flow hará que al insertar la nueva tarea en la base de
+    datos, cómo el flujo es continuo, enviará directamente a Success la nueva
+    tarea para que se pinte por la ui.
 	
 	***Con esto ya tendríamos un flujo completo.***
 	
@@ -358,7 +427,8 @@
 
 	7.3. Conectar StateFlow con Screen.
 
-	Cómo ya vamos a usar la información de la base de datos, podemos eliminar o comentar inicialmente el siguiente código del ViewModel para sustituirlo por 
+	Cómo ya vamos a usar la información de la base de datos, podemos eliminar o
+    comentar inicialmente el siguiente código del ViewModel para sustituirlo por
 	
 	```
 	//TODO: Código a eliminar. 
@@ -378,9 +448,11 @@
     }
 	```
 
-	Después de hacer esto, el IDE mostrará varios errores que debemos ir solucionando y actualizando.
+	Después de hacer esto, el IDE mostrará varios errores que debemos ir
+    solucionando y actualizando.
 	
-	En el mismo ViewModel debemos comentar el código que actualiza el check de las tareas y las elimina:
+	En el mismo ViewModel debemos comentar el código que actualiza el check de
+    las tareas y las elimina:
 	
 	```
     fun onItemRemove(taskModel: TaskModel) {
@@ -410,7 +482,9 @@
 	}
 	```
     
-	Pero debemos también realizar unos cambios en nuestra función Composable principal *(TasksScreen)* para que nuestra ui se gestione con los estados de la pantalla que hemos definido previamente. 
+	Pero debemos también realizar unos cambios en nuestra función Composable
+    principal *(TasksScreen)* para que nuestra ui se gestione con los estados de
+    la pantalla que hemos definido previamente. 
 	
 	Primero debemos crear un ciclo de vida de la Screen:
 	
@@ -418,7 +492,9 @@
 	val lifecycle = LocalLifecycleOwner.current.lifecycle
 	```
 
-	Después una variable uiState utilizando `produceState` de la biblioteca de `Kotlin State` para producir un estado *(TaskUiState)* que se puede observar desde la interfaz de usuario:
+	Después una variable uiState utilizando `produceState` de la biblioteca de
+    `Kotlin State` para producir un estado *(TaskUiState)* que se puede observar
+    desde la interfaz de usuario:
 
 	``` 
 	val uiState by produceState<TaskUiState>(
@@ -444,7 +520,8 @@
 
 	En resumen, este código establece y actualiza el estado `uiState` basado en el flujo **`uiState del tasksViewModel`**, y garantiza que estas actualizaciones solo ocurran cuando la actividad o fragmento esté en el estado STARTED. Es decir, nos va a crear un estado permanente que podemos leer en la ui, ya que estará suscrito al estado del ViewModel que hemos definido anteriormente.
 
-	Por último, dependiendo del estado en el que nos encontremos, podremos pintar una pantalla u otra:
+	Por último, dependiendo del estado en el que nos encontremos, podremos pintar
+    una pantalla u otra:
 
 	```
 	when (uiState) {
@@ -476,7 +553,8 @@
 	}
 	```
 
-	Si os fijáis, en la llamada a la función TasksList le vamos a pasar ya la lista de tipo TaskModel (que antes habíamos comentado porque vamos a utilizar la que me proporciona el flujo del estado). Nuestra función quedaría como sigue:
+	Si os fijáis, en la llamada a la función TasksList le vamos a pasar ya la
+    lista de tipo TaskModel (que antes habíamos comentado porque vamos a utilizar la que me proporciona el flujo del estado). Nuestra función quedaría como sigue:
 	
 	```
 	@Composable
@@ -495,19 +573,31 @@
 
 	### TAREA A REALIZAR:
 
-	Ya tendríamos todo corregido y solo nos faltaría eliminar los comentarios marcados como "TODO: Código a eliminar" y añadir la funcionalidad de borrar una tarea y actualizarla de la misma manera que hemos hecho con listar las tareas...
+	Ya tendríamos todo corregido y solo nos faltaría eliminar los comentarios
+    marcados como "TODO: Código a eliminar" y añadir la funcionalidad de borrar
+    una tarea y actualizarla de la misma manera que hemos hecho con listar las
+    tareas...
 	
 	***Pero esta tarea os la dejo a vosotros***
 	
-	Debéis crear los casos de usos UpdateTaskUseCase y DeleteTaskUseCase, crear las funciones correspondientes en el TaskRepository y las consultas necesarias en TaskDao (con las anotaciones correspondientes @Update y @Delete)
+	Debéis crear los casos de usos UpdateTaskUseCase y DeleteTaskUseCase, crear
+    las funciones correspondientes en el TaskRepository y las consultas necesarias en TaskDao (con las anotaciones correspondientes @Update y @Delete)
 	
-	Por último, en el TaskRepository podemos hacer una modificación que os va a enseñar un nuevo concepto de las funciones en Kotlin que quizás no conocéis todos.
+	Por último, en el TaskRepository podemos hacer una modificación que os va
+    a enseñar un nuevo concepto de las funciones en Kotlin que quizás no conocéis
+    todos.
 	
-	Os doy una función de extensión sobre TaskModel que se llama toData() y retorna un TaskEntity con los propios datos del TaskModel... vosotros debéis intentar aplicarla como parámetro de las 3 funciones addTask, updateTask y deleteTask que se llaman desde el taskDao y deben pasar por argumento un TaskEntity con la info del TaskModel que recibe la función suspendida.
+	Os doy una función de extensión sobre TaskModel que se llama toData() y 
+    retorna un TaskEntity con los propios datos del TaskModel... vosotros debéis
+    intentar aplicarla como parámetro de las 3 funciones addTask, updateTask y
+    deleteTask que se llaman desde el taskDao y deben pasar por argumento un
+    TaskEntity con la info del TaskModel que recibe la función suspendida.
 	
-	Una función de extensión agrega un método a una clase sin tener que crear un nuevo tipo, heredar de la clase origen y añadir un nuevo método.
+	Una función de extensión agrega un método a una clase sin tener que crear un
+    nuevo tipo, heredar de la clase origen y añadir un nuevo método.
 	
-	En este caso podéis ubicarla fuera de la clase, pero en el mismo fichero TaskRepository.
+	En este caso podéis ubicarla fuera de la clase, pero en el mismo fichero
+    TaskRepository.
 
 	```
 	fun TaskModel.toData(): TaskEntity {
